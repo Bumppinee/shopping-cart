@@ -1,13 +1,13 @@
-import { createContext } from 'react'
-
+import { createContext, useContext, useReducer } from 'react'
 import {faker} from '@faker-js/faker'
+import { cartReducer, productReducer } from './Reducers'
 
 
 
 
 
 const Cart = createContext()
-
+faker.seed(99);
 const Context = ({children}) => {
 // 20 products of fake data make array 
   const products = [...Array(20)].map(()=>({
@@ -23,11 +23,26 @@ const Context = ({children}) => {
   }));
   // use a hook called useReducers creates a function to increase and decrease a value
 
-  const [state, dispatch] = useReducer(reducer, initialState, init)
+  const [state, dispatch] = useReducer(cartReducer,{
+products:products,
+cart:[]
+    
+  });
+
+  const [ProductState, productDispatch] = useReducer(productReducer, {
+   byStock:false, 
+   byFastDelivery: false,
+   byRating: 0,
+   searchQuery: '',
+  });
 
   
-  return <Cart.Provider>{children}</Cart.Provider>
+  return <Cart.Provider value={{state, dispatch, ProductState, productDispatch}}>{children}</Cart.Provider>
   
 }
 
-export default Context
+export default Context;
+
+export const CartState=()=>{
+  return useContext(Cart);
+};
